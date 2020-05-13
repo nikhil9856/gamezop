@@ -25,6 +25,7 @@ func PushDataToRedis(req *gin.Context) (err error) {
 				"age", reqPayload.Age,
 				"hobby", reqPayload.Hobby); err == nil {
 				if byteArr, err = json.Marshal(reqPayload); err == nil {
+					//Publish Event To NSQ for syncing data to database
 					err = publishToNSQ(byteArr)
 				}
 			}
@@ -73,6 +74,7 @@ func PushEventToDatabase(body []byte) (err error) {
 				VALUES(?,?,?,?);`
 			params := []interface{}{reqModel.EmpID, reqModel.Name, reqModel.Age, reqModel.Hobby}
 			if _, err = conn.Exec(insertSQL, params...); err == nil {
+				//Delete data from Redis after inserting into database
 				err = deleteFromRedis(reqModel.EmpID)
 			}
 		}

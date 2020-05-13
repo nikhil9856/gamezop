@@ -24,6 +24,7 @@ func initService(group *gin.Engine) {
 //PostData : Post API
 func PostData(c *gin.Context) {
 	var err error
+	//Process post data
 	if err = util.PushDataToRedis(c); err == nil {
 		c.JSON(200, "success")
 	} else {
@@ -37,6 +38,7 @@ func GetData(c *gin.Context) {
 		data interface{}
 		err  error
 	)
+	//Process GET API
 	if data, err = util.GetDataFromDatabase(c); err == nil {
 		c.JSON(200, data)
 	} else {
