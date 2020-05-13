@@ -55,8 +55,10 @@ func GetDataFromDatabase(req *gin.Context) (data interface{}, err error) {
 //pgConn : Return PG connection
 func pgConn() (conn *pg.DB, err error) {
 	conn = pg.Connect(&pg.Options{
-		User:     "tolexo",
-		Database: "gamezop",
+		Addr:     model.DBHost + ":" + model.DBPort,
+		User:     model.DBUser,
+		Database: model.DBDatabase,
+		Password: model.DBPassword,
 	})
 	return
 }
@@ -96,7 +98,7 @@ func publishToNSQ(data []byte) (err error) {
 	config := nsq.NewConfig()
 	var w *nsq.Producer
 	if w, err = nsq.NewProducer("127.0.0.1:4150", config); err == nil {
-		err = w.Publish("gamezop", data)
+		err = w.Publish(model.NsqTopic, data)
 		w.Stop()
 	}
 	return
