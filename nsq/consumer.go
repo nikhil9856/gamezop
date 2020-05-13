@@ -17,8 +17,9 @@ func main() {
 	config := nsq.NewConfig()
 	q, _ := nsq.NewConsumer(model.NsqTopic, model.NsqChannel, config)
 	q.AddHandler(nsq.HandlerFunc(func(message *nsq.Message) error {
-		err = util.PushEventToDatabase(message.Body)
-		wg.Done()
+		if err = util.PushEventToDatabase(message.Body); err == nil {
+			wg.Done()
+		}
 		return err
 	}))
 	if err = q.ConnectToNSQD("127.0.0.1:4150"); err != nil {
